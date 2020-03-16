@@ -1,8 +1,7 @@
 name: radio_button_group
 description: A widget contains several single select button together.
 version: 0.0.1-dev.1
-author: Benjamin
-homepage:
+homepage: https://seasonleee.github.io/radio-button-group/
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
