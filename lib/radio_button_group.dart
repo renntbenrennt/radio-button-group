@@ -7,7 +7,7 @@ const EdgeInsets kButtonPadding = EdgeInsets.symmetric(
   horizontal: 8.0,
 );
 
-const EdgeInsets kButtonMargin = EdgeInsets.all(8.0);
+const EdgeInsets kButtonMargin = EdgeInsets.all(0.0);
 
 const LinearGradient kLinearGradient = LinearGradient(
   begin: Alignment.topCenter,
@@ -18,6 +18,8 @@ const LinearGradient kLinearGradient = LinearGradient(
   ],
 );
 
+const Color kInactiveBtnColor = Color(0xffd9d9d9);
+
 class RadioButton extends StatelessWidget {
   final String title;
   final int id;
@@ -26,17 +28,21 @@ class RadioButton extends StatelessWidget {
   final EdgeInsets padding;
   final EdgeInsets margin;
   final Color activeColor;
-  final Gradient gradient;
+  final Color inactiveColor;
+  final Gradient activeGradient;
+  final Gradient inactiveGradient;
 
   RadioButton({
-    this.title,
+    @required this.title,
     this.id,
     this.onTap,
     this.currentIndex,
     this.activeColor,
+    this.inactiveGradient,
     this.padding = kButtonPadding,
     this.margin = kButtonMargin,
-    this.gradient = kLinearGradient,
+    this.activeGradient,
+    this.inactiveColor,
   });
 
   @override
@@ -47,8 +53,8 @@ class RadioButton extends StatelessWidget {
         padding: padding,
         margin: margin,
         decoration: BoxDecoration(
-          gradient: (currentIndex == id) ? gradient : null,
-          color: (currentIndex == id) ? activeColor : Color(0xffd9d9d9),
+          gradient: (currentIndex == id) ? activeGradient : inactiveGradient,
+          color: (currentIndex == id) ? activeColor : inactiveColor,
           // TODO: figure out how to dynamically pass radius value
           borderRadius: BorderRadius.circular(4.0),
         ),
@@ -68,11 +74,25 @@ class RadioButtonGroup extends StatefulWidget {
   final List<String> titles;
   final Function onButton;
   final int activeIndex;
+  final double spacing;
+  final double runSpacing;
+  final WrapAlignment alignment;
+  final Color activeColor;
+  final Color inactiveColor;
+  final Gradient activeGradient;
+  final Gradient inactiveGradient;
 
   const RadioButtonGroup({
     @required this.titles,
     this.onButton,
+    this.activeColor,
+    this.inactiveGradient,
+    this.inactiveColor = kInactiveBtnColor,
+    this.activeGradient = kLinearGradient,
     this.activeIndex = 0,
+    this.spacing = 8.0,
+    this.runSpacing = 8.0,
+    this.alignment = WrapAlignment.start,
   });
 
   @override
@@ -88,6 +108,10 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
     List<Widget> res = [];
     for (int index = 0; index < titles.length; index++) {
       res.add(RadioButton(
+        activeColor: widget.activeColor,
+        inactiveColor: widget.inactiveColor,
+        activeGradient: widget.activeGradient,
+        inactiveGradient: widget.inactiveGradient,
         title: titles[index],
         id: index,
         onTap: () {
@@ -95,7 +119,7 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
             currentIndex = index;
           });
           // TODO: triage this incoming function
-          // TODO: find the way to limit the incoming function
+          // TODO: find the way to make the function generic
           if (widget.onButton != null) {
             widget.onButton();
           }
@@ -117,11 +141,10 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: all the value in here should be dynamic
     return Wrap(
-      spacing: 8.0,
-      runSpacing: 4.0,
-      alignment: WrapAlignment.start,
+      spacing: widget.spacing,
+      runSpacing: widget.runSpacing,
+      alignment: widget.alignment,
       children: getButtons(titles),
     );
   }
